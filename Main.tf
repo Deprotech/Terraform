@@ -6,10 +6,7 @@ resource "aws_instance" "dev" {
   #security_groups = "sg-07ac7265afe515c71"
   user_data = file("postgres.sh")
 
-  tags = {
-    Name = "dev"
-    Env  = "dev-env"
-  }
+  tags = var.common_tags
 }
 ###############################################################################################
 #  NETWORK RESOURCE
@@ -19,27 +16,21 @@ resource "aws_vpc" "DEV-VPC" {
   cidr_block       = var.vpc-cidr
   instance_tenancy = "default"
 
-  tags = {
-    Name = "dev-vpc"
-  }
+  tags = var.common_tags
 }
 
 resource "aws_subnet" "private-subnet" {
   vpc_id     = local.vpc_id
   cidr_block = var.private-subnet-cidr
 
-  tags = {
-    Name = "private-subnet"
-  }
+  tags = var.common_tags
 }
 
 resource "aws_subnet" "public-subnet" {
   vpc_id     = local.vpc_id
   cidr_block = var.public-subnet-cidr
 
-  tags = {
-    Name = "public-subnet"
-  }
+  tags = var.common_tags
 }
 
 resource "aws_route_table" "public-rt" {
@@ -50,9 +41,7 @@ resource "aws_route_table" "public-rt" {
     gateway_id = aws_internet_gateway.igw.id
   }
 
-  tags = {
-    Name = "public-rt"
-  }
+  tags = var.common_tags
 }
 
 resource "aws_route_table" "private-rt" {
@@ -60,16 +49,14 @@ resource "aws_route_table" "private-rt" {
 
   route {
     cidr_block = var.private-rt-cidr
-    # gateway_id = aws_nat_gateway.nat.id
+    gateway_id = aws_nat_gateway.nat-GW.id
   }
 
-  tags = {
-    Name = "private-rt"
-  }
+  tags = var.common_tags
 }
 
 resource "aws_route_table_association" "pub-rt-ass" {
-  subnet_id      = aws_subnet.public-subnet.id
+  subnet_id      = local.public-subnet_id
   route_table_id = aws_route_table.public-rt.id
 }
 
@@ -81,23 +68,20 @@ resource "aws_route_table_association" "priv-rt-ass" {
 resource "aws_internet_gateway" "igw" {
   vpc_id = local.vpc_id
 
-  tags = {
-    Name = "igw"
-  }
+  tags = var.common_tags
 }
 
-/*
-resource "aws_nat_gateway" "nat" {
-#   allocation_id = aws_eip.nat.id
-   subnet_id = aws_subnet.priv-rt.id
-    
+
+resource "aws_nat_gateway" "nat-GW" {
+  #   allocation_id = aws_eip.nat.id
+  subnet_id = local.public-subnet_id
+
 }
-*/
+
 
 /*
 resource "aws_eip" "nat" {
    vpc = true
-   
 }
 */
 
@@ -141,8 +125,6 @@ resource "aws_security_group" "allow_tls" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name = "allow_tls"
-  }
+  tags = var.common_tags
 }
-
+ 

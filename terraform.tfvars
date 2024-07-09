@@ -2,7 +2,7 @@ ami = "ami-002070d43b0a4f171"
 
 instance-type = "t2.micro"
 
-key-name = "terra"
+key-name = "postgres"
 
 vpc-cidr = "10.0.0.0/16"
 
@@ -23,3 +23,8 @@ inbound-rule-https = ["0.0.0.0/0"]
 inbound-rule-ssh = ["0.0.0.0/0"]
 
 region = "us-east-1"
+
+common_tags = {
+  name = "dev"
+  env  = "dev-evn"
+}
