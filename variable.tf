@@ -58,6 +58,11 @@ variable "inbound-rule-ssh" {
   description = "provide inbound rule"
 }
 
+variable "outbound-rule-all-traffic" {
+  type        = list(any)
+  description = "provide outbound rule"
+}
+
 variable "region" {
   type        = string
   description = "provide region"

@@ -22,6 +22,8 @@ inbound-rule-https = ["0.0.0.0/0"]
 
 inbound-rule-ssh = ["0.0.0.0/0"]
 
+outbound-rule-all-traffic = ["0.0.0.0/0"]
+
 region = "us-east-1"
 
 common_tags = {

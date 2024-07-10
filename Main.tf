@@ -122,9 +122,58 @@ resource "aws_security_group" "allow_tls" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.outbound-rule-all-traffic
   }
 
   tags = var.common_tags
 }
- 
+
+##################################################################################
+# STORAGE RESOURCE
+##################################################################################
+
+resource "aws_s3_bucket" "iam-user" {
+  bucket = ""
+
+  tags = {
+    Name        = "My bucket"
+    Environment = "Dev"
+  }
+}
+
+##################################################################################
+# IAM USER RESOURCE
+##################################################################################
+
+resource "aws_iam_user" "iam-user" {
+  name = "elvis-dev"
+
+  tags = {
+    name = "elvis-dev"
+  }
+}
+
+resource "aws_iam_access_key" "aws_iam_access_key" {
+  user = aws_iam_user.iam-user.name
+}
+
+data "aws_iam_policy_document" "s3_get_put_delete_document" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:DeleteObject"
+    ]
+    resources = [
+      "arn:aws:s3:::deprotech/*",
+      "arn:aws:s3:::deprotechelvis/*"
+    ]
+  }
+}
+
+resource "aws_iam_user_policy" "s3_get_put_delete_policy" {
+  name   = "s3_get_put_delete_policy"
+  user   = aws_iam_user.iam-user.name
+  policy = data.aws_iam_policy_document.s3_get_put_delete_document.json
+}
