@@ -127,7 +127,7 @@ resource "aws_security_group" "allow_tls" {
 
   tags = var.common_tags
 }
-
+/*
 ##################################################################################
 # STORAGE RESOURCE
 ##################################################################################
@@ -177,3 +177,4 @@ resource "aws_iam_user_policy" "s3_get_put_delete_policy" {
   user   = aws_iam_user.iam-user.name
   policy = data.aws_iam_policy_document.s3_get_put_delete_document.json
 }
+*/
